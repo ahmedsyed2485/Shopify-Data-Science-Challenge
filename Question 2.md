@@ -6,30 +6,34 @@
 #### 
 Question 1: 
 #####
-SELECT 
-COUNT(ShipperID)
-FROM Orders
-WHERE ShipperID == 1;
+SELECT Count(DISTINCT(O.OrderID))
+FROM ORDERS O
+INNER JOIN SHIPPERS S ON o.shipperID = S.ShipperID
+WHERE ShipperName = 'Speedy Express'
+
 
 54 orders were shipped by Speedy Express in total
 ####
 Question 2:
 #####
-SELECT c.CustomerName, COUNT(*) AS Count
-FROM Orders AS o, Customers AS c
-WHERE o.CustomerID = c.CustomerID
-GROUP BY o.CustomerID
-ORDER BY Count DESC
-LIMIT 1;
+SELECT LastName, MAX(COUNT_ORDERS)
+FROM 
+(
+SELECT E.EmployeeID, LastName, COUNT(OrderID) AS COUNT_ORDERS
+FROM EMPLOYEES E INNER JOIN ORDERS O ON E.EmployeeID = O.EmployeeID
+GROUP BY E.EmployeeID) t
  
-Handel is the last name of the employee with the most orders
+Peacock is the last name of the employee with the most orders
 ####
 Question 3:
 #####
-SELECT p.ProductName, SUM(Quantity) AS Total
-FROM Orders AS o, OrderDetails AS ord, Customers AS c, Products AS p
-WHERE c.Country = "Germany" AND ord.OrderID = o.OrderID AND ord.ProductID = p.ProductID AND c.CustomerID = o.CustomerID
-GROUP BY p.ProductID
-ORDER BY Total DESC
-LIMIT 1;
+SELECT PRODUCT, MAX(SUM_Q) as
+FROM 
+(SELECT P.PRODUCTNAME AS PRODUCT, C.COUNTRY, SUM(OD.QUANTITY) as SUM_Q
+FROM CUSTOMERS C INNER JOIN ORDERS O ON C.CuStomerID = O.CustomerID
+INNER JOIN ORDERDETAILS OD ON O.ORDERID = OD.ORDERID
+INNER JOIN PRODUCTS P ON OD.PRODUCTID = P.PRODUCTID
+WHERE country = 'Germany'
+GROUP BY P.PRODUCTNAME) t
+
 Boston Crab Meat was ordered by customers the most in Germany
